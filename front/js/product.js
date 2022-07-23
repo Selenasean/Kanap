@@ -1,12 +1,14 @@
-/* Get the query string of the current page's URL */
+/**
+ *  Get the query string of the current page's URL
+ */
 const queryString_URLIdProduct = window.location.search;
 console.log(queryString_URLIdProduct);
 
 /**
  * Get the interested data = product's ID = idProduct
  * @constructor { URLSearchParams() }
- * @param { url }*/
-
+ * @param { url }
+ */
 let urlParamSearch = new URLSearchParams(queryString_URLIdProduct);
 let idProduct = urlParamSearch.get("id");
 console.log(idProduct);
@@ -16,7 +18,6 @@ console.log(idProduct);
  * @async function to get one product's data from API using fetch
  * @return { promise } which is parse/translate into JS in the function
  */
-
 async function getOneProduct() {
   const urlOneProduct = `http://localhost:3000/api/products/${idProduct}`;
   const oneProduct = await fetch(urlOneProduct);
@@ -25,53 +26,14 @@ async function getOneProduct() {
 }
 
 /**
- * @async function to get product's data
- * Display product's data on the page via DOM
- */
-
-(async function main() {
-  try {
-    const oneProduct = await getOneProduct();
-    console.log(oneProduct);
-
-    // Insert oneProduct's settings in DOM //
-
-    // Creation <img> //
-    const createImg = document.createElement("img");
-    createImg.setAttribute("src", oneProduct.imageUrl);
-    createImg.setAttribute("alt", oneProduct.description);
-    document.querySelector(".item__img").appendChild(createImg);
-
-    // Creation innerText in <h1> //
-    document.querySelector("#title").innerText = oneProduct.name;
-
-    // Creation innertext in <span> //
-    document.querySelector("#price").innerText = oneProduct.price;
-
-    // Creation innerTexte in <p> //
-    document.querySelector("#description").innerText = oneProduct.description;
-
-    // Creation input's colors choice //
-    for (let color of oneProduct.colors) {
-      const createOption = document.createElement("option");
-      createOption.setAttribute("value", color);
-      createOption.innerText = `${color}`;
-      document.querySelector("#colors").appendChild(createOption);
-    }
-  } catch (err) {
-    console.log("hoho error");
-  }
-})();
-
-/**
  * Storage data in localStorage for cart
  * @function saveInLocalStorage which save as an array the product in localStorage
- * @param product we want to add*/
-
+ * @param product we want to add
+ */
 function saveInLocalStorage(productOptions) {
-  let productInLocalStorage = JSON.parse(localStorage.getItem("sofa")); // Get the product in array as an object
+  let productInLocalStorage = JSON.parse(localStorage.getItem("sofa")); // Get the product from the array as an object
 
-  // If array in localStorage is empty = null, add the productOption'array in it, as a string
+  // If array in localStorage is empty = null, create an array and add the productOption in it, as a string
   if (productInLocalStorage === null) {
     productInLocalStorage = [];
     productInLocalStorage.push(productOptions);
@@ -94,17 +56,60 @@ function saveInLocalStorage(productOptions) {
 }
 
 /**
- * Onclick AddToCart button, add the product sofa in localStorage
+ * @async function to get product's data
+ * Display product's data on the page via DOM
+ * Add the select product in localStorage using @addEventListener on a button
  */
-document
-  .getElementById("addToCart")
-  .addEventListener("click", function (event) {
-    event.preventDefault();
-    let sofa = {
-      id: idProduct,
-      color: document.getElementById("colors").value,
-      quantity: parseInt(document.getElementById("quantity").value),
-      price: document.getElementById("price").innerText,
-    };
-    saveInLocalStorage(sofa);
-  });
+(async function main() {
+  try {
+    const oneProduct = await getOneProduct();
+    console.log(oneProduct);
+
+    // Insert oneProduct's settings in DOM
+
+    // Creation <img>
+    const createImg = document.createElement("img");
+    createImg.setAttribute("src", oneProduct.imageUrl);
+    createImg.setAttribute("alt", oneProduct.altTxt);
+    document.querySelector(".item__img").appendChild(createImg);
+
+    // Creation innerText in <h1>
+    document.querySelector("#title").innerText = oneProduct.name;
+
+    // Creation innertext in <span>
+    document.querySelector("#price").innerText = oneProduct.price;
+
+    // Creation innerTexte in <p>
+    document.querySelector("#description").innerText = oneProduct.description;
+
+    // Creation input's colors choice for each color
+    for (let color of oneProduct.colors) {
+      const createOption = document.createElement("option");
+      createOption.setAttribute("value", color);
+      createOption.innerText = `${color}`;
+      document.querySelector("#colors").appendChild(createOption);
+    }
+
+    // Onclick AddToCart button, add the product sofa in localStorage
+    // And reload the page
+    document
+      .getElementById("addToCart")
+      .addEventListener("click", function (event) {
+        event.preventDefault();
+        let sofa = {
+          id: idProduct,
+          name: oneProduct.name,
+          color: document.getElementById("colors").value,
+          quantity: parseInt(document.getElementById("quantity").value),
+          altTxt: oneProduct.altTxt,
+          urlImg: oneProduct.imageUrl,
+        };
+        saveInLocalStorage(sofa);
+        setTimeout(function () {
+          window.location.reload(true);
+        }, 1000);
+      });
+  } catch (err) {
+    console.log("hoho error");
+  }
+})();
