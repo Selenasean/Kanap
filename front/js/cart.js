@@ -161,3 +161,154 @@ async function main() {
   updateDisplayTotalPrice(); // Display the total price of the cart, update itself
 }
 main();
+
+/**
+ * Validation of the form using regExp in checkfunctions of inputs
+ * @function check for each input, checking if input's value are correct
+ */
+// get the form element in DOM
+const form = document.querySelector(".cart__order__form");
+
+// Check First name input
+form.firstName.setAttribute("placeholder", "Saisir un prénom");
+form.firstName.addEventListener("change", (e) => {
+  e.preventDefault();
+  checkFirstName(form.firstName);
+});
+function checkFirstName(FirstNameInput) {
+  const nameRegExp = new RegExp("^[a-zA-ZÀ-ÿ ,.'-]+$");
+  let testFirstName = nameRegExp.test(FirstNameInput.value);
+  let msgError = document.getElementById("firstNameErrorMsg");
+  // if test isn't true (meaning validated by RexExp) throw an error msg
+  if (!testFirstName) {
+    msgError.innerHTML = "Saisie incorrect";
+  } else {
+    msgError.innerHTML = "";
+  }
+}
+
+// Check last name input
+form.lastName.setAttribute("placeholder", "Saisir un nom");
+form.lastName.addEventListener("change", (e) => {
+  e.preventDefault();
+  checkLastName(form.lastName);
+});
+function checkLastName(LastNameInput) {
+  const nameRegExp = new RegExp("^[a-zA-ZÀ-ÿ ,.'-]+$");
+  let testLastName = nameRegExp.test(LastNameInput.value);
+  let msgError = document.getElementById("lastNameErrorMsg");
+  // if test isn't true (meaning validated by RexExp) throw an error msg
+  if (!testLastName) {
+    msgError.innerHTML = "Saisie incorrect, ne comporte que des majuscules";
+  } else {
+    msgError.innerHTML = "";
+  }
+}
+
+// Check the address
+form.address.setAttribute("placeholder", "Saisir une adresse");
+form.address.addEventListener("change", (e) => {
+  e.preventDefault();
+  checkAddress(form.address);
+});
+function checkAddress(addressInput) {
+  const addressRegExp = new RegExp("^[a-zA-Z0-9s,. '-]{3,}$");
+  let testAddress = addressRegExp.test(addressInput.value);
+  let msgError = document.getElementById("addressErrorMsg");
+  // if test isn't true (meaning validated by RexExp) throw an error msg
+  if (!testAddress) {
+    msgError.innerHTML = "Ceci n'est pas une adresse correcte";
+  } else {
+    msgError.innerHTML = "";
+  }
+}
+
+// Check the city
+form.city.setAttribute("placeholder", "Saisir une ville et un code postale");
+form.city.addEventListener("change", (e) => {
+  e.preventDefault();
+  checkCity(form.city);
+});
+
+function checkCity(cityInput) {
+  const cityRegExp = new RegExp(
+    "^[a-zA-Z0-9s,. '-]{3,}(([1-95]{2}|2A|2B)[0-9]{3})$|^[971-974]$"
+  );
+  let testCity = cityRegExp.test(cityInput.value);
+  let msgError = document.getElementById("cityErrorMsg");
+  // if test isn't true (meaning validated by RexExp) throw an error msg
+  if (!testCity) {
+    msgError.innerHTML =
+      "Saisie incorrect, doit comporter ville et code postale";
+  } else {
+    msgError.innerHTML = "";
+  }
+}
+
+// Check email
+form.email.setAttribute("placeholder", "Saisir une adresse email");
+form.email.addEventListener("change", (e) => {
+  e.preventDefault();
+  checkEmail(form.email);
+});
+function checkEmail(emailInput) {
+  const emailRegExp = new RegExp(`[a-z0-9]+@[a-z]+\.[a-z]{2,3}`);
+  let testEmail = emailRegExp.test(emailInput.value);
+  let msgError = document.getElementById("emailErrorMsg");
+  // if test isn't true (meaning validated by RexExp) throw an error msg
+  if (!testEmail) {
+    msgError.innerHTML = "Saisie email incorrect";
+  } else {
+    msgError.innerHTML = "";
+  }
+}
+
+/**
+ * Send the request to API
+ */
+
+// make en request to send the info to the API, in exchange of an order number
+async function postOrder() {
+  const urlPostOrder = "http://localhost:3000/api/products/order";
+  // Creation of an array of the products in the cart
+  let productsInLocalStorage = JSON.parse(localStorage.getItem("sofa"));
+  const productsOrder = [];
+  for (let idproducts of productsInLocalStorage) {
+    productsOrder.push(idproducts.id);
+  }
+  const postOrderFetch = await fetch(urlPostOrder, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contact: {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        email: document.getElementById("email").value,
+      },
+      products: productsOrder,
+    }),
+  });
+
+  const postOrderParse = await postOrderFetch.json();
+  return postOrderParse;
+}
+
+document.getElementById("order").addEventListener("click", async (e) => {
+  e.preventDefault();
+  try {
+    const getPostOrder = await postOrder();
+    console.log(getPostOrder);
+    const orderId = getPostOrder.orderId;
+    console.log(orderId);
+    window.location.href = `confirmation.html?id=${orderId}`;
+    localStorage.clear("sofa");
+    document.querySelector("cart__order__form").reset();
+  } catch (err) {
+    console.log("err get postOrder");
+  }
+});

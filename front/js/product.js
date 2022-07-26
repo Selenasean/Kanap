@@ -1,15 +1,15 @@
 /**
  *  Get the query string of the current page's URL
  */
-const queryString_URLIdProduct = window.location.search;
-console.log(queryString_URLIdProduct);
+const queryString_URLOrderId = window.location.search;
+console.log(queryString_URLOrderId);
 
 /**
  * Get the interested data = product's ID = idProduct
  * @constructor { URLSearchParams() }
  * @param { url }
  */
-let urlParamSearch = new URLSearchParams(queryString_URLIdProduct);
+let urlParamSearch = new URLSearchParams(queryString_URLOrderId);
 let idProduct = urlParamSearch.get("id");
 console.log(idProduct);
 
