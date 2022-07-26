@@ -1,7 +1,8 @@
 # Kanap #
 
     Kanap est un site de e-commerce, commercialisant des canapés.
-    Nous sommes chargés d'integrer dynamiquement les produits et les interactions utilisateur uniquement via du JavaScript, 
+    Nous sommes chargés d'integrer dynamiquement les produits et les interactions utilisateur,
+    uniquement via du JavaScript, 
     dans la mesure où les elements statiques (HTML et CSS) du site sont deja implémentés.
     Le site se compose de 4 pages :
     - Accueil : exposant le choix de tous les articles
