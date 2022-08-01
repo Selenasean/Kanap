@@ -12,12 +12,11 @@ async function getProducts() {
 
 /**
  * @async to get data product from API via @function getProducts
- * Displaying all product's data on the page
+ * Display all product's data on the page
  */
 (async function main() {
   try {
     const products = await getProducts();
-    console.log(products);
 
     // Creation card applying each product of products array
 

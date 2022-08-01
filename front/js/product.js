@@ -1,17 +1,11 @@
 /**
- *  Get the query string of the current page's URL
- */
-const queryString_URLOrderId = window.location.search;
-console.log(queryString_URLOrderId);
-
-/**
- * Get the interested data = product's ID = idProduct
+ * Get the query string of the current page's URL, then the interested data = product's ID = idProduct
  * @constructor { URLSearchParams() }
  * @param { url }
  */
+const queryString_URLOrderId = window.location.search;
 let urlParamSearch = new URLSearchParams(queryString_URLOrderId);
 let idProduct = urlParamSearch.get("id");
-console.log(idProduct);
 
 /**
  *  GET one specific product's data from API
@@ -56,14 +50,12 @@ function saveInLocalStorage(productOptions) {
 }
 
 /**
- * @async function to get product's data
- * Display product's data on the page via DOM
+ * @async function to get product's data and display it on the page
  * Add the select product in localStorage using @addEventListener on a button
  */
 (async function main() {
   try {
     const oneProduct = await getOneProduct();
-    console.log(oneProduct);
 
     // Insert oneProduct's settings in DOM
 
@@ -73,13 +65,13 @@ function saveInLocalStorage(productOptions) {
     createImg.setAttribute("alt", oneProduct.altTxt);
     document.querySelector(".item__img").appendChild(createImg);
 
-    // Creation innerText in <h1>
+    // Creation innerText in <h1> for the product's name
     document.querySelector("#title").innerText = oneProduct.name;
 
-    // Creation innertext in <span>
+    // Creation innertext in <span> for price
     document.querySelector("#price").innerText = oneProduct.price;
 
-    // Creation innerTexte in <p>
+    // Creation innerTexte in <p> for the produt's description
     document.querySelector("#description").innerText = oneProduct.description;
 
     // Creation input's colors choice for each color
@@ -89,6 +81,14 @@ function saveInLocalStorage(productOptions) {
       createOption.innerText = `${color}`;
       document.querySelector("#colors").appendChild(createOption);
     }
+    // Condition for quantity input will not be a negative number
+    const qty = document.getElementById("quantity");
+    qty.addEventListener("change", (e) => {
+      e.preventDefault();
+      if (qty.value < 1) {
+        qty.value = 0;
+      }
+    });
 
     // Onclick AddToCart button, add the product sofa in localStorage
     // And reload the page
